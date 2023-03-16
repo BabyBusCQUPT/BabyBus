@@ -1,0 +1,6 @@
+{
+  "appId": "wx66364678cdcf0c10",
+  "appSecret": "3790b7e8ceb2980ce6ca2b7909027182",
+  "grantType": "authorization_code",
+  "basicUrl": "https://api.weixin.qq.com/sns/jscode2session"
+}
