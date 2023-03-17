@@ -1,8 +1,9 @@
 package model
 
+import "gorm.io/gorm"
+
 type User struct {
-	//gorm.Model软删除
-	Id            string
+	gorm.Model
 	OpenId        string
 	SessionKey    string
 	Age           int

@@ -9,6 +9,7 @@ func Init() {
 	{
 		userGroup.Use()
 		userGroup.POST("/register", Register) //微信注册
+		userGroup.DELETE("/delete", logOut)   //退出登录
 	}
 
 }
