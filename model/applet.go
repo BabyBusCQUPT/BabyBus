@@ -8,7 +8,7 @@ type Applet struct {
 }
 
 type WeChatConnection struct {
-	Id         int    //token
+	Id         uint   //token
 	OpenId     string //token
 	SessionKey string //token
 	ErrMsg     string

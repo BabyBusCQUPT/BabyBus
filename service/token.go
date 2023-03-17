@@ -3,6 +3,7 @@ package service
 import (
 	"BabyBus/config"
 	"BabyBus/model"
+	"encoding/json"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"time"
@@ -23,6 +24,7 @@ func CreateToken(identify string) (string, error) {
 	return tokenString, err
 }
 
+// ParseToken 解析token获取token结构体
 func ParseToken(tokenString string) (*model.TokenClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &model.TokenClaims{},
 		func(token *jwt.Token) (interface{}, error) {
@@ -37,4 +39,28 @@ func ParseToken(tokenString string) (*model.TokenClaims, error) {
 	}
 	err = token.Claims.Valid()
 	return claims, err
+}
+
+// ParseTokenIdentify 解析token.Identify字段获取用户信息
+func ParseTokenIdentify(user *model.User, tokenClaims *model.TokenClaims) error {
+	WeChatConnection := &model.WeChatConnection{}
+	if user.Token == "" {
+		return errors.New("token不合理")
+	}
+
+	identify := tokenClaims.Identify
+	err := json.Unmarshal([]byte(identify), &WeChatConnection)
+	if err != nil {
+		return err
+	}
+
+	user.ID = WeChatConnection.Id
+
+	openId := WeChatConnection.OpenId
+	sessionKey := WeChatConnection.SessionKey
+
+	user.OpenId = openId
+	user.SessionKey = sessionKey
+
+	return nil
 }
