@@ -1,9 +1,11 @@
 package main
 
-import "BabyBus/dao"
+import (
+	"BabyBus/api"
+	"BabyBus/dao"
+)
 
 func main() {
-	//
 	dao.InitMysql()
-
+	api.Init()
 }
