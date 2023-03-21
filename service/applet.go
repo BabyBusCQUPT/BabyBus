@@ -4,12 +4,12 @@ import (
 	"BabyBus/model"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	url2 "net/url"
 	"os"
 )
 
+// ParseAppletConfig 解析小程序配置文件，获取appId和appSecret
 func ParseAppletConfig() (*model.Applet, error) {
 	applet := &model.Applet{}
 	jsonFile, err := os.Open("config/applet.json")
@@ -17,7 +17,7 @@ func ParseAppletConfig() (*model.Applet, error) {
 		return nil, err
 	}
 	defer jsonFile.Close()
-	jsonByte, err := ioutil.ReadAll(jsonFile)
+	jsonByte, err := io.ReadAll(jsonFile)
 	if err != nil {
 		return nil, err
 	}
