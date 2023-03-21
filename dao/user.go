@@ -17,3 +17,17 @@ func CountAllId() (id int64, err error) {
 	}
 	return id + 1, nil
 }
+
+func Save(user *model.User) error {
+	if err := DB.Model(&user).Save(user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func Update(user model.User) error {
+	if err := DB.Model(&user).Where("id = ?", user.ID).Save(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}

@@ -9,7 +9,7 @@ type User struct {
 	Age           int
 	Gender        byte
 	Token         string
-	NikeName      string
+	Nickname      string
 	Image         string
 	UserLongitude float32
 	UserLatitude  float32
