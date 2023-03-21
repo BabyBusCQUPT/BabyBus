@@ -5,8 +5,10 @@ import (
 	"BabyBus/model"
 	"BabyBus/service"
 	"BabyBus/tool"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 )
 
 func Register(ctx *gin.Context) {
@@ -138,4 +140,27 @@ func ScoreBus(ctx *gin.Context) {
 		return
 	}
 	tool.Success("打分成功", ctx)
+}
+
+// DeriveFriend 模糊搜索朋友
+func DeriveFriend(ctx *gin.Context) {
+	user := &model.User{}
+	user.Token = ctx.PostForm("token")
+	friendName := ctx.PostForm("friendName")
+	err := tool.IsValid(friendName)
+	if err != nil {
+		tool.Failure(400, "查找朋友失败：昵称字段为空", ctx)
+		return
+	}
+	friends, err := service.SearchByKeyWords(friendName)
+	if err != nil {
+		fmt.Printf("模糊搜索nickname失败:%s\n", err)
+		tool.Failure(500, "服务器错误", ctx)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
+		"message": "success",
+		"friends": friends,
+	})
 }

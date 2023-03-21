@@ -14,4 +14,5 @@ type User struct {
 	UserLongitude float32
 	UserLatitude  float32
 	MostUsed      int
+	Friend        int
 }

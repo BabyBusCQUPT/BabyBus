@@ -23,3 +23,8 @@ func SaveUser(user *model.User) error {
 func UpdateUser(user model.User) error {
 	return dao.Update(user)
 }
+
+// SearchByKeyWords 模糊搜索昵称
+func SearchByKeyWords(words string) ([]model.User, error) {
+	return dao.Search(words)
+}

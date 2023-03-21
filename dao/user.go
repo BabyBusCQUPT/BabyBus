@@ -31,3 +31,10 @@ func Update(user model.User) error {
 	}
 	return nil
 }
+
+func Search(words string) (friends []model.User, err error) {
+	if err = DB.Model(&model.User{}).Where("nickname LIKE ?", "%"+words+"%").Find(&friends).Error; err != nil {
+		return nil, err
+	}
+	return friends, nil
+}
