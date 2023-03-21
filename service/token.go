@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// CreateToken 创建token
 func CreateToken(identify string) (string, error) {
 	tokenClaims := model.TokenClaims{
 		Identify: identify,
