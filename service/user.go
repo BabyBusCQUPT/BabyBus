@@ -28,3 +28,7 @@ func UpdateUser(user model.User) error {
 func SearchByKeyWords(words string) ([]model.User, error) {
 	return dao.Search(words)
 }
+
+func BindFriend(user *model.User) error {
+	return dao.Save(user)
+}

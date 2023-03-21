@@ -144,8 +144,6 @@ func ScoreBus(ctx *gin.Context) {
 
 // DeriveFriend 模糊搜索朋友
 func DeriveFriend(ctx *gin.Context) {
-	user := &model.User{}
-	user.Token = ctx.PostForm("token")
 	friendName := ctx.PostForm("friendName")
 	err := tool.IsValid(friendName)
 	if err != nil {
@@ -163,4 +161,29 @@ func DeriveFriend(ctx *gin.Context) {
 		"message": "success",
 		"friends": friends,
 	})
+}
+
+// BindFriend 绑定朋友
+func BindFriend(ctx *gin.Context) {
+	user := &model.User{}
+	user.Token = ctx.GetHeader("token")
+	id := ctx.PostForm("friend")
+	i, err := tool.IsValidAndTrans(id)
+	if err != nil {
+		if err == config.InvalidParameterErr {
+			tool.Failure(400, "绑定朋友失败：朋友id为空", ctx)
+			return
+		}
+		log.Printf("string转int失败：%s\n", err)
+		tool.Failure(500, "服务器错误", ctx)
+		return
+	}
+	user.Friend = uint(i)
+	if err = service.BindFriend(user); err != nil {
+		log.Printf("绑定朋友id失败a:%s\n", err)
+		tool.Failure(500, "服务器错误", ctx)
+		return
+	}
+	tool.Success("成功绑定朋友", ctx)
+	return
 }
