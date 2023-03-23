@@ -7,8 +7,8 @@ import (
 
 type Message struct {
 	gorm.Model
-	PostId    int
-	ReceiveId int
+	PostId    string
+	ReceiveId string
 	PostTime  time.Time
 	Detail    string
 }
