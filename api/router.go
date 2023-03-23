@@ -35,4 +35,9 @@ func Init() {
 		busGroup.GET("/totalAverage", GetBusScore) //展示巴士均分
 	}
 
+	messafeGroup := engine.Group("/message")
+	{
+		messafeGroup.GET("/messageDetail", MessageDetail) //获取信息详情
+	}
+
 }
