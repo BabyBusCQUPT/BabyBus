@@ -85,7 +85,3 @@ func GetPersonalScore(ctx *gin.Context) {
 		"scores": scores,
 	})
 }
-
-func GetBusScore(ctx *gin.Context) {
-
-}
