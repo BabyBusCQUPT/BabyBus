@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"BabyBus/config"
 	"BabyBus/model"
 )
 
@@ -37,4 +38,18 @@ func Search(words string) (friends []model.User, err error) {
 		return nil, err
 	}
 	return friends, nil
+}
+
+func GetUserInfo(user *model.User) error {
+	if err := DB.Model(&user).Where("id = ?", user.ID).Find(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func FindOneWithOpenidAndSessionkey(user model.User) (string, error) {
+	if err := DB.Model(&user).Where("openId = ? And sessionKey = ?", user.OpenId, user.SessionKey).Find(&user).Error; err != nil {
+		return config.InvalidToken, err
+	}
+	return user.Token, nil
 }

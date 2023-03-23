@@ -32,3 +32,13 @@ func SearchByKeyWords(words string) ([]model.User, error) {
 func BindFriend(user *model.User) error {
 	return dao.Save(user)
 }
+
+// SaveScore 用户给bus打分
+func SaveScore(babyBus *model.BabyBus) error {
+	return dao.SaveScore(babyBus)
+}
+
+// GetUserInfo 展示用户全部信息
+func GetUserInfo(user *model.User) error {
+	return dao.GetUserInfo(user)
+}

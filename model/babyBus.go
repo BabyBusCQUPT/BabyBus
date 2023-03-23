@@ -1,10 +1,10 @@
 package model
 
+import "gorm.io/gorm"
+
 type BabyBus struct {
-	Id        int
-	BabyId    int
-	LineOne   float32
-	LineTwo   float32
-	LineThree float32
-	LineFour  float32
+	gorm.Model
+	BabyId string
+	BusId  int
+	Score  float64
 }

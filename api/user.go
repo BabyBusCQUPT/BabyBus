@@ -5,10 +5,8 @@ import (
 	"BabyBus/model"
 	"BabyBus/service"
 	"BabyBus/tool"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
-	"net/http"
 )
 
 func Register(ctx *gin.Context) {
@@ -119,71 +117,21 @@ func Update(ctx *gin.Context) {
 	}
 }
 
-func ScoreBus(ctx *gin.Context) {
+func GetUserInfo(ctx *gin.Context) {
+	//封装JWT解析出来ID
 	user := &model.User{}
 	user.Token = ctx.GetHeader("token")
-	tokenClaims, err := service.ParseToken(user.Token)
-	if err != nil {
-		log.Printf("解析token失败：%s\n", err)
-		tool.Failure(500, "服务器错误", ctx)
+	if err := service.GetIdFromToken(user); err != nil {
+		log.Printf("未从用户中成功获取用户id:%s\n", err)
+		tool.Failure(400, "未成功从用户token中获取用户id", ctx)
 		return
 	}
-	err = service.ParseTokenIdentify(user, tokenClaims)
-	if err != nil {
-		log.Printf("获取token内用户信息失败：%s\n", err)
-		tool.Failure(500, "服务器错误", ctx)
+	if err := service.GetUserInfo(user); err != nil {
+		tool.Failure(400, "未成功保存user", ctx)
+		log.Printf("未成功保存user:%s", err)
 		return
 	}
-	if err = service.SaveUser(user); err != nil {
-		log.Printf("存储用户打分失败:%s\n", err)
-		tool.Failure(500, "服务器错误", ctx)
-		return
-	}
-	tool.Success("打分成功", ctx)
-}
-
-// DeriveFriend 模糊搜索朋友
-func DeriveFriend(ctx *gin.Context) {
-	friendName := ctx.PostForm("friendName")
-	err := tool.IsValid(friendName)
-	if err != nil {
-		tool.Failure(400, "查找朋友失败：昵称字段为空", ctx)
-		return
-	}
-	friends, err := service.SearchByKeyWords(friendName)
-	if err != nil {
-		fmt.Printf("模糊搜索nickname失败:%s\n", err)
-		tool.Failure(500, "服务器错误", ctx)
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"code":    http.StatusOK,
-		"message": "success",
-		"friends": friends,
+	ctx.JSON(200, gin.H{
+		"user": user,
 	})
-}
-
-// BindFriend 绑定朋友
-func BindFriend(ctx *gin.Context) {
-	user := &model.User{}
-	user.Token = ctx.GetHeader("token")
-	id := ctx.PostForm("friend")
-	i, err := tool.IsValidAndTrans(id)
-	if err != nil {
-		if err == config.InvalidParameterErr {
-			tool.Failure(400, "绑定朋友失败：朋友id为空", ctx)
-			return
-		}
-		log.Printf("string转int失败：%s\n", err)
-		tool.Failure(500, "服务器错误", ctx)
-		return
-	}
-	user.Friend = uint(i)
-	if err = service.BindFriend(user); err != nil {
-		log.Printf("绑定朋友id失败a:%s\n", err)
-		tool.Failure(500, "服务器错误", ctx)
-		return
-	}
-	tool.Success("成功绑定朋友", ctx)
-	return
 }

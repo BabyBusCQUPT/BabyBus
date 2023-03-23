@@ -24,3 +24,8 @@ func IsValid(s string) error {
 	}
 	return nil
 }
+
+// StringToFloat string转为float
+func StringToFloat(s string) (float64, error) {
+	return strconv.ParseFloat(s, 32)
+}

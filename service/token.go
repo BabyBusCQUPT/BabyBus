@@ -2,6 +2,7 @@ package service
 
 import (
 	"BabyBus/config"
+	"BabyBus/dao"
 	"BabyBus/model"
 	"encoding/json"
 	"errors"
@@ -64,4 +65,21 @@ func ParseTokenIdentify(user *model.User, tokenClaims *model.TokenClaims) error 
 	user.SessionKey = sessionKey
 
 	return nil
+}
+
+func GetIdFromToken(user *model.User) error {
+	tokenClaims, err := ParseToken(user.Token)
+	if err != nil {
+		return errors.New("解析token失败,服务器错误")
+	}
+	err = ParseTokenIdentify(user, tokenClaims)
+	if err != nil {
+		return errors.New("获取token内用户信息失败,服务器错误")
+	}
+	return nil
+}
+
+// FindOneWithOpenIdAndSessionKey 通过openId和sessionKey来查询用户token
+func FindOneWithOpenIdAndSessionKey(user model.User) (string, error) {
+	return dao.FindOneWithOpenidAndSessionkey(user)
 }
