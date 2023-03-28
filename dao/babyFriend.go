@@ -40,6 +40,14 @@ func BindFriend(userId string, friendId string) error {
 	return nil
 }
 
+func CountFriend(openId string) (int64, error) {
+	var count int64
+	if err := DB.Model(&model.BabyFriend{}).Where("user_id = ?", openId).Count(&count).Error; err != nil {
+		return config.InvalidParameter, err
+	}
+	return count, nil
+}
+
 /*
 // AcceptFriend 绑定朋友成功
 func AcceptFriend(userId string, friendId string) error {

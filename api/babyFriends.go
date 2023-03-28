@@ -53,6 +53,16 @@ func BindFriend(ctx *gin.Context) {
 		tool.Failure(400, "未成功从用户token中获取用户id", ctx)
 		return
 	}
+	num, err := service.CountFriend(user.OpenId)
+	if err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("统计当前好友数量失败:%s\n", err)
+		return
+	}
+	if num > config.MaxFriendNum {
+		tool.Failure(400, "绑定好友数已达上限", ctx)
+		return
+	}
 	if err = service.BindFriend(user.OpenId, friendId); err != nil {
 		if err == config.AddHimself {
 			tool.Failure(400, config.AddHimself.Error(), ctx)

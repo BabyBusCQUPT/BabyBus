@@ -15,6 +15,10 @@ func BindFriend(userId string, friendId string) error {
 	return dao.BindFriend(userId, friendId)
 }
 
+func CountFriend(openId string) (int64, error) {
+	return dao.CountFriend(openId)
+}
+
 /*
 // AcceptFriend 绑定朋友被同意
 func AcceptFriend(userId string, friendId string) error {
