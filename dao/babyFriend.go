@@ -1,6 +1,18 @@
 package dao
 
-import "BabyBus/model"
+import (
+	"BabyBus/config"
+	"BabyBus/model"
+)
+
+// GetUserFriends 获取绑定的所有朋友
+func GetUserFriends(openId string) (babyFriend []model.BabyFriend, err error) {
+	//var babyFriend []model.BabyFriend
+	if err = DB.Model(&model.BabyFriend{}).Where("user_id = ?", openId).Find(&babyFriend).Error; err != nil {
+		return nil, err
+	}
+	return babyFriend, nil
+}
 
 // BindFriend 请求绑定朋友，状态显示为在绑定中
 func BindFriend(userId string, friendId string) error {

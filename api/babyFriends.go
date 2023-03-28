@@ -72,6 +72,7 @@ func BindFriend(ctx *gin.Context) {
 	})
 }
 
+// GetFriends 获取已经绑定的所有朋友
 func GetFriends(ctx *gin.Context) {
 	user := &model.User{}
 	user.Token = ctx.GetHeader("token")
@@ -80,30 +81,32 @@ func GetFriends(ctx *gin.Context) {
 		tool.Failure(400, "未成功从用户token中获取用户id", ctx)
 		return
 	}
-	openId := user.OpenId
-	babyFriends := make([]*model.BabyFriend, 3, 6)
-	if err := service.GetUserFriend(openId, babyFriends); err != nil {
+	babyFriends, err := service.GetUserFriends(user.OpenId)
+	if err != nil {
 		log.Printf("未从好友表中查询到好友:%s\n", err)
 		tool.Failure(400, "未从好友表中查询到好友", ctx)
 		return
 	}
 	type friendsInfo struct {
-		Image string
-		Date  time.Time
+		Image    string
+		NikeName string
+		Date     time.Time
 	}
 	friendsInfos := make([]*friendsInfo, 3, 6)
 	for i := range babyFriends {
 		friendsInfos[i].Date = babyFriends[i].CreatedAt
-		user := &model.User{}
-		user.OpenId = babyFriends[i].FriendId
-		if err := service.GetUserInfo(user); err != nil {
+		friend := &model.User{}
+		friend.OpenId = babyFriends[i].FriendId
+		if err = service.GetUserInfo(friend); err != nil {
 			log.Printf("未从用户表中查询到该用户的好友:%s\n", err)
 			tool.Failure(400, "未从用户表中查询到该用户的好友", ctx)
 			return
 		}
-		friendsInfos[i].Image = user.Image
+		friendsInfos[i].Image = friend.Image
+		friendsInfos[i].NikeName = friend.Nickname
 	}
 	ctx.JSON(http.StatusOK, gin.H{
+		"code":         http.StatusOK,
 		"friendsInfos": friendsInfos,
 	})
 }

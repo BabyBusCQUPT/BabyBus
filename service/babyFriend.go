@@ -5,8 +5,14 @@ import (
 	"BabyBus/model"
 )
 
-func GetUserFriend(openid string, babyFriend []*model.BabyFriend) error {
-	return dao.GetUserFriend(openid, babyFriend)
+// GetUserFriends 获取用户所有的朋友来进行展示
+func GetUserFriends(openid string) (babyFriend []model.BabyFriend, err error) {
+	return dao.GetUserFriends(openid)
+}
+
+// BindFriend 请求绑定朋友
+func BindFriend(userId string, friendId string) error {
+	return dao.BindFriend(userId, friendId)
 }
 
 /*
