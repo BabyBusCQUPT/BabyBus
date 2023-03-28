@@ -33,29 +33,43 @@ func DeriveFriend(ctx *gin.Context) {
 	})
 }
 
-// BindFriend 绑定朋友
 func BindFriend(ctx *gin.Context) {
 	user := &model.User{}
-	user.Token = ctx.GetHeader("token")
-	id := ctx.PostForm("friend")
-	i, err := tool.IsValidAndTrans(id)
+	friendId := ctx.PostForm("friendId")
+	err := tool.IsValid(friendId)
 	if err != nil {
-		if err == config.InvalidParameterErr {
-			tool.Failure(400, "绑定朋友失败：朋友id为空", ctx)
-			return
-		}
-		log.Printf("string转int失败：%s\n", err)
-		tool.Failure(500, "服务器错误", ctx)
+		tool.Failure(400, "绑定朋友失败：朋友id为空", ctx)
 		return
 	}
-	user.Friend = uint(i)
-	if err = service.BindFriend(user); err != nil {
+	friend := &model.User{OpenId: friendId}
+	if err = service.GetUserInfo(friend); err != nil {
+		log.Printf("未在表中查询到朋友，朋友未注册:%s\n", err)
+		tool.Failure(400, "未在表中查询到朋友，朋友未注册", ctx)
+		return
+	}
+	user.Token = ctx.GetHeader("token")
+	if err = service.GetIdFromToken(user); err != nil {
+		log.Printf("未从用户token中成功获取用户id:%s\n", err)
+		tool.Failure(400, "未成功从用户token中获取用户id", ctx)
+		return
+	}
+	if err = service.BindFriend(user.OpenId, friendId); err != nil {
+		if err == config.AddHimself {
+			tool.Failure(400, config.AddHimself.Error(), ctx)
+			return
+		} else if err == config.RepeatedAdd {
+			tool.Failure(400, config.RepeatedAdd.Error(), ctx)
+			return
+		}
 		log.Printf("绑定朋友id失败a:%s\n", err)
 		tool.Failure(500, "服务器错误", ctx)
 		return
 	}
-	tool.Success("成功绑定朋友", ctx)
-	return
+	ctx.JSON(200, gin.H{
+		"userId":   user.OpenId,
+		"friendId": friendId,
+		"context":  friend.Nickname + "请求与您绑定好友关系",
+	})
 }
 
 func GetFriends(ctx *gin.Context) {
