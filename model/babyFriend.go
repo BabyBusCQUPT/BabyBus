@@ -6,4 +6,5 @@ type BabyFriend struct {
 	gorm.Model
 	UserId   string
 	FriendId string
+	Status   int
 }
