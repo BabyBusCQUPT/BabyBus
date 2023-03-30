@@ -29,10 +29,6 @@ func SearchByKeyWords(words string) ([]model.User, error) {
 	return dao.Search(words)
 }
 
-func BindFriend(user *model.User) error {
-	return dao.Save(user)
-}
-
 // SaveScore 用户给bus打分
 func SaveScore(babyBus *model.BabyBus) error {
 	return dao.SaveScore(babyBus)

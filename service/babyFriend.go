@@ -1,9 +1,14 @@
 package service
 
 import (
+	"BabyBus/config"
 	"BabyBus/dao"
 	"BabyBus/model"
+	"errors"
+	"sync"
 )
+
+var rwLocker sync.RWMutex
 
 // GetUserFriends 获取用户所有的朋友来进行展示
 func GetUserFriends(openid string) (babyFriend []model.BabyFriend, err error) {

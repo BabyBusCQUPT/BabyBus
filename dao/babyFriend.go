@@ -48,7 +48,6 @@ func CountFriend(openId string) (int64, error) {
 	return count, nil
 }
 
-/*
 // AcceptFriend 绑定朋友成功
 func AcceptFriend(userId string, friendId string) error {
 	//status 表示连接成功
@@ -60,9 +59,8 @@ func AcceptFriend(userId string, friendId string) error {
 
 // RejectFriend 绑定朋友被拒绝
 func RejectFriend(userId string, friendId string) error {
-	if err := DB.Model(&model.BabyFriend{}).Where("user_id = ? and friend_id = ?", userId, friendId).Update("status", 2).Error; err != nil {
+	if err := DB.Model(&model.BabyFriend{}).Delete(model.BabyFriend{UserId: userId, FriendId: friendId}).Error; err != nil {
 		return err
 	}
 	return nil
 }
-*/
