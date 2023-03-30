@@ -27,6 +27,7 @@ func Init() {
 	{
 		friendsGroup.POST("/findFriend", DeriveFriend) //模糊搜索朋友
 		friendsGroup.POST("/bingFriend", BindFriend)   //绑定朋友
+		friendsGroup.POST("/addFriend", AddFriend)     //添加好友（通过ws发起请求）
 		friendsGroup.GET("/bindRecord", GetFriends)    //获取绑定好友及记录
 	}
 

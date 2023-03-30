@@ -120,3 +120,27 @@ func GetFriends(ctx *gin.Context) {
 		"friendsInfos": friendsInfos,
 	})
 }
+
+func AddFriend(ctx *gin.Context) {
+	var err error
+	user := &model.User{}
+	user.Token = ctx.GetHeader("token")
+	if err = service.GetIdFromToken(user); err != nil {
+		log.Printf("从token中获取id失败:%s\n", err)
+		tool.Failure(500, "服务器错误", ctx)
+		return
+	}
+	babyFriend := &model.BabyFriend{
+		UserId: user.OpenId,
+	}
+	babyFriend.FriendId = ctx.PostForm("friendId")
+	if err = tool.IsValid(babyFriend.FriendId); err != nil {
+		tool.Failure(400, "缺失必要参数：缺失friendId", ctx)
+		return
+	}
+	if err = service.BindFriend(babyFriend.UserId, babyFriend.FriendId); err != nil {
+		log.Printf("绑定好友失败:%s\n", err)
+		tool.Failure(500, "服务器错误", ctx)
+		return
+	}
+}
