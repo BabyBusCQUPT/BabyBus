@@ -8,7 +8,7 @@ import (
 // GetUserFriends 获取绑定的所有朋友
 func GetUserFriends(openId string) (babyFriend []model.BabyFriend, err error) {
 	//var babyFriend []model.BabyFriend
-	if err = DB.Model(&model.BabyFriend{}).Where("user_id = ?", openId).Find(&babyFriend).Error; err != nil {
+	if err = DB.Model(&model.BabyFriend{}).Where("user_id = ? AND status = ?", openId, config.Accept).Find(&babyFriend).Error; err != nil {
 		return nil, err
 	}
 	return babyFriend, nil
