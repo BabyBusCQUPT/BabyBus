@@ -35,7 +35,6 @@ func BindFriend(userId string, friendId string) error {
 	if err := dao.BindFriend(userId, friendId); err != nil {
 		return err
 	}
-	SendMsg(userId, user.Nickname+"邀请您绑定好友关系")
 	return nil
 }
 
@@ -54,7 +53,7 @@ func AcceptFriend(userId string, friendId string) error {
 
 // RejectFriend 绑定朋友被拒绝
 func RejectFriend(userId string, friendId string) error {
-	if err := dao.RejectFriend(userId, friendId); err != nil {
+	if err := dao.DeleteFriend(userId, friendId); err != nil {
 		return err
 	}
 	SendMsg(userId, "绑定好友失败")
