@@ -57,9 +57,12 @@ func AcceptFriend(userId string, friendId string) error {
 	return nil
 }
 
-// RejectFriend 绑定朋友被拒绝
-func RejectFriend(userId string, friendId string) error {
+// DeleteFriend 绑定朋友被拒绝
+func DeleteFriend(userId string, friendId string) error {
 	if err := DB.Model(&model.BabyFriend{}).Delete(model.BabyFriend{UserId: userId, FriendId: friendId}).Error; err != nil {
+		return err
+	}
+	if err := DB.Model(&model.BabyFriend{}).Delete(model.BabyFriend{UserId: friendId, FriendId: userId}).Error; err != nil {
 		return err
 	}
 	return nil
