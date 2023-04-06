@@ -24,40 +24,60 @@ func CreateConn(ctx *gin.Context) {
 		tool.Failure(500, "服务器错误", ctx)
 		return
 	}
+	friendId := ctx.PostForm("friendId")
 	var upGrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
 	}
-	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	connUser, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
 		log.Printf("websocket upgrade error:%s\n", err)
 		tool.Failure(500, "服务器错误", ctx)
 		return
 	}
-	node := &model.Node{
-		Conn:      conn,
+	connFriend, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		log.Printf("websocket upgrade error:%s\n", err)
+		tool.Failure(500, "服务器错误", ctx)
+		return
+	}
+	nodeUser := &model.Node{
+		Conn:      connUser,
+		DataQueue: make(chan []byte, 100),
+	}
+	nodeFriend := &model.Node{
+		Conn:      connFriend,
 		DataQueue: make(chan []byte, 100),
 	}
 	if _, ok := config.ClientMap[user.OpenId]; ok {
 		config.ClientMap[user.OpenId].Conn.Close()
 		delete(config.ClientMap, user.OpenId)
 	}
+	if _, ok := config.ClientMap[friendId]; ok {
+		config.ClientMap[user.OpenId].Conn.Close()
+		delete(config.ClientMap, user.OpenId)
+	}
 
 	rwLocker.Lock()
-	config.ClientMap[user.OpenId] = node
+	config.ClientMap[user.OpenId] = nodeUser
+	rwLocker.Unlock()
+
+	rwLocker.Lock()
+	config.ClientMap[friendId] = nodeFriend
 	rwLocker.Unlock()
 
 	//处理接收消息
 	go func() {
-		if err = service.RecProc(node, user.OpenId); err != nil {
-			log.Printf("websocket receive error:%s\n", err)
+		if err = service.RecProc(nodeUser, user.OpenId, nodeFriend, friendId); err != nil {
+			log.Printf("websocket receive error:%s\n,user error", err)
 		}
 	}()
 	//处理发送消息
 	go func() {
-		if err = service.SendProc(node); err != nil {
-			log.Printf("websocket send error:%s\n", err)
+		if err = service.SendProc(nodeUser, nodeFriend); err != nil {
+			log.Printf("websocket send error:%s\n, user error", err)
 		}
+
 	}()
 }
