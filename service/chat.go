@@ -32,3 +32,7 @@ func RecProc(node *model.Node, userId string) error {
 		SendMsg(userId, string(data))
 	}
 }
+
+func Close(id string) error {
+	return config.ClientMap[id].Conn.Close()
+}

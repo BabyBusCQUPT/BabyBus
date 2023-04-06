@@ -153,3 +153,42 @@ func AddFriend(ctx *gin.Context) {
 	}
 	service.SendMsg(user.OpenId, user.Nickname+"邀请您绑定好友关系")
 }
+
+func Reject(ctx *gin.Context) {
+	var err error
+	user := &model.User{}
+	friendId := ctx.PostForm("friendId")
+	user.Token = ctx.GetHeader("token")
+	if err = service.GetIdFromToken(user); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("从token中获取id失败:%s\n", err)
+		return
+	}
+	if err = tool.IsValid(friendId); err != nil {
+		tool.Failure(400, "缺失必要参数：缺失friendId", ctx)
+		return
+	}
+	//删除原有数据
+	if err = service.RejectFriend(friendId, user.OpenId); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("会话拒绝好友失败：删除绑定记录失败:%s\n", err)
+		return
+	}
+
+	service.SendMsg(friendId, user.OpenId+config.Rejected)
+	if err = service.Close(friendId); err != nil {
+		log.Printf("关闭好友连接失败：%s\n", err)
+		tool.Failure(400, "服务器错误", ctx)
+		return
+	}
+	if err = service.Close(user.OpenId); err != nil {
+		log.Printf("关闭本人连接失败：%s\n", err)
+		tool.Failure(400, "服务器错误", ctx)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"info": "success",
+	})
+}

@@ -28,10 +28,11 @@ func Init() {
 	friendsGroup := engine.Group("friends")
 	{
 		friendsGroup.Use(middleware.TokenAuth)
-		wsGroup := friendsGroup.Group("/ws")
+		wsGroup := friendsGroup.Group("/ws", CreateConn)
 		{
 			wsGroup.POST("/bindFriend", BindFriend) //绑定朋友
 			wsGroup.POST("/addFriend", AddFriend)   //添加好友（通过ws发起请求）
+			wsGroup.POST("/reject", Reject)         //ws拒绝绑定好友
 		}
 		friendsGroup.POST("/findFriend", DeriveFriend) //模糊搜索朋友
 		friendsGroup.GET("/bindRecord", GetFriends)    //获取绑定好友及记录
