@@ -7,5 +7,6 @@ import (
 
 func main() {
 	dao.InitMysql()
+	dao.InitRedis()
 	api.Init()
 }
