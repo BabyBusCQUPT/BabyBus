@@ -54,6 +54,9 @@ func AcceptFriend(userId string, friendId string) error {
 	if err := DB.Model(&model.BabyFriend{}).Where("user_id = ? and friend_id = ?", userId, friendId).Update("status", 1).Error; err != nil {
 		return err
 	}
+	if err := DB.Model(&model.BabyFriend{}).Where("user_id = ? and friend_id = ?", friendId, userId).Update("status", 1).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
