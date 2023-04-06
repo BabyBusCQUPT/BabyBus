@@ -51,11 +51,19 @@ func CreateConn(ctx *gin.Context) {
 		DataQueue: make(chan []byte, 100),
 	}
 	if _, ok := config.ClientMap[user.OpenId]; ok {
-		config.ClientMap[user.OpenId].Conn.Close()
+		if err = config.ClientMap[user.OpenId].Conn.Close(); err != nil {
+			log.Printf("关闭会话失败:%s\n", err)
+			tool.Failure(500, "服务器错误", ctx)
+			return
+		}
 		delete(config.ClientMap, user.OpenId)
 	}
 	if _, ok := config.ClientMap[friendId]; ok {
-		config.ClientMap[user.OpenId].Conn.Close()
+		if err = config.ClientMap[user.OpenId].Conn.Close(); err != nil {
+			log.Printf("关闭会话失败:%s\n", err)
+			tool.Failure(500, "服务器错误", ctx)
+			return
+		}
 		delete(config.ClientMap, user.OpenId)
 	}
 
