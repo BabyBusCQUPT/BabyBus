@@ -158,6 +158,33 @@ func AddFriend(ctx *gin.Context) {
 	})
 }
 
+func Agree(ctx *gin.Context) {
+	var err error
+	user := &model.User{}
+	friendId := ctx.PostForm("friendId")
+	user.Token = ctx.GetHeader("token")
+	if err = service.GetIdFromToken(user); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("从token中获取id失败:%s\n", err)
+		return
+	}
+	if err = tool.IsValid(friendId); err != nil {
+		tool.Failure(400, "缺失必要参数：缺失friendId", ctx)
+		return
+	}
+	//更新朋友之间的状态，设置成已经绑定
+	if err = service.AcceptFriend(user.OpenId, friendId); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("同意绑定好友失败:%s\n", err)
+		return
+	}
+	service.SendMsg(friendId, user.Nickname+config.Accepted)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"info": "success",
+	})
+}
+
 func Reject(ctx *gin.Context) {
 	var err error
 	user := &model.User{}
