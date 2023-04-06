@@ -83,7 +83,12 @@ func BindFriend(ctx *gin.Context) {
 		tool.Failure(400, "绑定好友数已达上限", ctx)
 		return
 	}
-	service.SendMsg(friend.OpenId, config.Accepted)
+	if err = service.GetUserInfo(user); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("查询用户消息失败:%s\n", err)
+		return
+	}
+	service.SendMsg(friend.OpenId, user.Nickname+config.Accepted)
 	ctx.JSON(200, gin.H{
 		"code": http.StatusOK,
 		"info": "绑定成功",
@@ -146,6 +151,11 @@ func AddFriend(ctx *gin.Context) {
 		tool.Failure(400, "缺失必要参数：缺失friendId", ctx)
 		return
 	}
+	if err = service.GetUserInfo(user); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("查询用户消息失败:%s\n", err)
+		return
+	}
 	if err = service.BindFriend(babyFriend.UserId, babyFriend.FriendId); err != nil {
 		log.Printf("绑定好友失败:%s\n", err)
 		tool.Failure(500, "服务器错误", ctx)
@@ -178,6 +188,11 @@ func Agree(ctx *gin.Context) {
 		log.Printf("同意绑定好友失败:%s\n", err)
 		return
 	}
+	if err = service.GetUserInfo(user); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("查询用户消息失败:%s\n", err)
+		return
+	}
 	service.SendMsg(friendId, user.Nickname+config.Accepted)
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
@@ -206,7 +221,12 @@ func Reject(ctx *gin.Context) {
 		return
 	}
 
-	service.SendMsg(friendId, user.OpenId+config.Rejected)
+	if err = service.GetUserInfo(user); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("查询用户消息失败:%s\n", err)
+		return
+	}
+	service.SendMsg(friendId, user.Nickname+config.Rejected)
 	if err = service.Close(friendId); err != nil {
 		log.Printf("关闭好友连接失败：%s\n", err)
 		tool.Failure(400, "服务器错误", ctx)
