@@ -152,6 +152,10 @@ func AddFriend(ctx *gin.Context) {
 		return
 	}
 	service.SendMsg(user.OpenId, user.Nickname+"邀请您绑定好友关系")
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"info": "success",
+	})
 }
 
 func Reject(ctx *gin.Context) {
