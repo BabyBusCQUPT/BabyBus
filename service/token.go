@@ -81,5 +81,5 @@ func GetIdFromToken(user *model.User) error {
 
 // FindOneWithOpenIdAndSessionKey 通过openId和sessionKey来查询用户token
 func FindOneWithOpenIdAndSessionKey(user model.User) (string, error) {
-	return dao.FindOneWithOpenidAndSessionkey(user)
+	return dao.FindOneWithOpenidAndSessionKey(user)
 }

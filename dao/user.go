@@ -47,7 +47,7 @@ func GetUserInfo(user *model.User) error {
 	return nil
 }
 
-func FindOneWithOpenidAndSessionkey(user model.User) (string, error) {
+func FindOneWithOpenidAndSessionKey(user model.User) (string, error) {
 	if err := DB.Model(&user).Where("openId = ? And sessionKey = ?", user.OpenId, user.SessionKey).Find(&user).Error; err != nil {
 		return config.InvalidToken, err
 	}
