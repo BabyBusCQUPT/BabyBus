@@ -5,6 +5,7 @@ import (
 	"BabyBus/tool"
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 )
 
 func GetBusScore(ctx *gin.Context) {
@@ -22,5 +23,24 @@ func GetBusScore(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{
 		"sumScore": sumScore,
 		"sumBaby":  sumBaby,
+	})
+}
+
+func FuzzyStation(ctx *gin.Context) {
+	var err error
+	words := ctx.PostForm("keyWords")
+	if err = tool.IsValid(words); err != nil {
+		tool.Failure(400, "缺失必要参数：关键字为空", ctx)
+		return
+	}
+	stations, err := service.SelectStations(words)
+	if err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("模糊搜索站点失败:%s\n", err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"code":     http.StatusOK,
+		"stations": stations,
 	})
 }
