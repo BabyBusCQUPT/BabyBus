@@ -38,3 +38,11 @@ func StationsScoreIncr(IncrNum float64, stationName string) error {
 	err := RDB.ZIncrBy("hotStations", IncrNum, stationName).Err()
 	return err
 }
+
+func GetHotStations() []string {
+	hot := RDB.ZRevRangeByScore("hotStations", redis.ZRangeBy{
+		Max: "+inf",
+		Min: "-inf",
+	}).Val()
+	return hot
+}

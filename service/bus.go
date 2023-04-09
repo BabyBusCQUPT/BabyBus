@@ -20,3 +20,7 @@ func GetStationDetails(stationName string) (*model.Station, error) {
 func StationsScoreIncr(IncrNum float64, stationName string) error {
 	return dao.StationsScoreIncr(IncrNum, stationName)
 }
+
+func GetHot() []string {
+	return dao.GetHotStations()
+}

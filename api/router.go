@@ -44,6 +44,7 @@ func Init() {
 		busGroup.GET("/totalAverage", GetBusScore)       //展示巴士均分
 		busGroup.POST("/fuzzyStation", FuzzyStation)     //模糊搜索站点
 		busGroup.POST("/stationDetails", StationDetails) //获取站点详情信息
+		busGroup.GET("/hotStations", HotStations)        //热搜站点
 	}
 
 	/*

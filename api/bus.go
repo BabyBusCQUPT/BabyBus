@@ -68,3 +68,10 @@ func StationDetails(ctx *gin.Context) {
 		"stationDInfo": station,
 	})
 }
+
+func HotStations(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"hot":  service.GetHot(),
+	})
+}
