@@ -46,3 +46,20 @@ func GetHotStations() []string {
 	}).Val()
 	return hot
 }
+
+func CheckLimit(ip string) (int64, error) {
+	count, err := RDB.Get(ip).Int64()
+	if err != nil && err != redis.Nil {
+		return 0, err
+	}
+	return count, err
+}
+
+func IpIncrBy(ip string) error {
+	_, err := RDB.IncrBy(ip, config.Incr).Result()
+	return err
+}
+
+func TimeExpire(ip string) error {
+	return RDB.Expire(ip, config.Expire).Err()
+}

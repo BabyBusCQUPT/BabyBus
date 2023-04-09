@@ -24,3 +24,29 @@ func StationsScoreIncr(IncrNum float64, stationName string) error {
 func GetHot() []string {
 	return dao.GetHotStations()
 }
+
+//防止恶意刷新导致热榜失真
+
+// CheckLimit 查看此时此ip是否超出访问次数
+func CheckLimit(ip string) error {
+	count, err := dao.CheckLimit(ip)
+	if err != nil {
+		return err
+	}
+	if count > config.LimitedRequest {
+		return config.TooManyRequests
+	}
+	return nil
+}
+
+func IpRefresh(ip string) (err error) {
+	var mu sync.Mutex
+	mu.Lock()
+	defer mu.Unlock()
+	if err = dao.IpIncrBy(ip); err != nil {
+		return err
+	}
+
+	//设置过期时间
+	return dao.TimeExpire(ip)
+}

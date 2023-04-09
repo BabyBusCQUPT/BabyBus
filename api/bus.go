@@ -52,6 +52,26 @@ func StationDetails(ctx *gin.Context) {
 		tool.Failure(400, "缺失站点名称：关键字为空", ctx)
 		return
 	}
+
+	//防止恶意刷新导致热榜失真的问题
+	//获取ip地址
+	ip := ctx.ClientIP()
+	//查看当前是否过量访问
+	if err = service.CheckLimit(ip); err != nil {
+		if err.Error() == config.TooManyRequests.Error() {
+			tool.Failure(http.StatusTooManyRequests, config.TooManyRequests.Error(), ctx)
+			return
+		}
+		tool.Failure(500, "服务器错误", ctx)
+		return
+	}
+	//未过量访问则更新访问状态
+	if err = service.IpRefresh(ip); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("更新ip访问错误:%s\n", err)
+		return
+	}
+
 	station, err := service.GetStationDetails(stationName)
 	if err != nil {
 		tool.Failure(500, "服务器错误", ctx)
