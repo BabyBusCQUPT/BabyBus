@@ -41,8 +41,9 @@ func Init() {
 
 	busGroup := engine.Group("/bus")
 	{
-		busGroup.GET("/totalAverage", GetBusScore)   //展示巴士均分
-		busGroup.POST("/fuzzyStation", FuzzyStation) //模糊搜索站点
+		busGroup.GET("/totalAverage", GetBusScore)       //展示巴士均分
+		busGroup.POST("/fuzzyStation", FuzzyStation)     //模糊搜索站点
+		busGroup.POST("/stationDetails", StationDetails) //获取站点详情信息
 	}
 
 	/*

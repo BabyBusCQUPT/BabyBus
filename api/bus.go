@@ -44,3 +44,27 @@ func FuzzyStation(ctx *gin.Context) {
 		"stations": stations,
 	})
 }
+
+func StationDetails(ctx *gin.Context) {
+	var err error
+	stationName := ctx.PostForm("stationName")
+	if err = tool.IsValid(stationName); err != nil {
+		tool.Failure(400, "缺失站点名称：关键字为空", ctx)
+		return
+	}
+	station, err := service.GetStationDetails(stationName)
+	if err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("查询站点详情信息失败:%s\n", err)
+		return
+	}
+	if err = service.StationsScoreIncr(1, stationName); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("增加用户查询次数失败:%s\n", err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"code":         http.StatusOK,
+		"stationDInfo": station,
+	})
+}

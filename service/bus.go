@@ -12,3 +12,11 @@ func GetBusScore(busId string) (sumScore float32, sumBaby int64, err error) {
 func SelectStations(keyWords string) ([]model.Station, error) {
 	return dao.LikeSelect(keyWords)
 }
+
+func GetStationDetails(stationName string) (*model.Station, error) {
+	return dao.GetStationDetails(stationName)
+}
+
+func StationsScoreIncr(IncrNum float64, stationName string) error {
+	return dao.StationsScoreIncr(IncrNum, stationName)
+}
