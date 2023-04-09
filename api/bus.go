@@ -1,6 +1,7 @@
 package api
 
 import (
+	"BabyBus/config"
 	"BabyBus/service"
 	"BabyBus/tool"
 	"github.com/gin-gonic/gin"
@@ -93,5 +94,30 @@ func HotStations(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
 		"hot":  service.GetHot(),
+	})
+}
+
+func UserSurroundings(ctx *gin.Context) {
+	userLongitude := ctx.PostForm("longitude")
+	userLatitude := ctx.PostForm("latitude")
+	longitude, err := tool.IsValidAndTrans(userLatitude)
+	if err != nil {
+		tool.Failure(400, "传入用户位置为空:维度为空", ctx)
+		return
+	}
+	latitude, err := tool.IsValidAndTrans(userLongitude)
+	if err != nil {
+		tool.Failure(400, "传入用户位置为空：经度为空", ctx)
+		return
+	}
+	GeoLocations, err := service.UserSurroundings(float64(longitude), float64(latitude))
+	if err != nil {
+		tool.Failure(500, "未从redis中获取相应的周围信息", ctx)
+		log.Printf("未从redis中获取用户周边信息：%s\n", err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"code":             http.StatusOK,
+		"userSurroundings": GeoLocations,
 	})
 }

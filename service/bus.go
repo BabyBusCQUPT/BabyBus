@@ -1,8 +1,11 @@
 package service
 
 import (
+	"BabyBus/config"
 	"BabyBus/dao"
 	"BabyBus/model"
+	"github.com/go-redis/redis"
+	"sync"
 )
 
 func GetBusScore(busId string) (sumScore float32, sumBaby int64, err error) {
@@ -19,6 +22,10 @@ func GetStationDetails(stationName string) (*model.Station, error) {
 
 func StationsScoreIncr(IncrNum float64, stationName string) error {
 	return dao.StationsScoreIncr(IncrNum, stationName)
+}
+
+func UserSurroundings(userLongitude float64, userLatitude float64) ([]redis.GeoLocation, error) {
+	return dao.UserSurroundings(userLongitude, userLatitude)
 }
 
 func GetHot() []string {

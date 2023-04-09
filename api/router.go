@@ -13,9 +13,10 @@ func Init() {
 	userGroup := engine.Group("/user")
 	{
 		userGroup.Use(middleware.TokenAuth)
-		userGroup.DELETE("/delete", logOut)            //退出登录
-		userGroup.POST("/update", Update)              //更新用户信息
-		userGroup.GET("/getPersonalInfo", GetUserInfo) //获取用户基本信息
+		userGroup.DELETE("/delete", logOut)               //退出登录
+		userGroup.POST("/update", Update)                 //更新用户信息
+		userGroup.GET("/getPersonalInfo", GetUserInfo)    //获取用户基本信息
+		userGroup.POST("/surroundings", UserSurroundings) //获取用户周边站点
 	}
 
 	babyBusGroup := engine.Group("/babyBus")

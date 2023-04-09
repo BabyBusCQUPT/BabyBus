@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"BabyBus/config"
 	"BabyBus/model"
 	"github.com/go-redis/redis"
 )
@@ -32,6 +33,33 @@ func GetStationDetails(stationName string) (station *model.Station, err error) {
 func HotStations(stationName string) error {
 	err := RDB.ZAdd("hotStations", redis.Z{Score: 0, Member: stationName}).Err()
 	return err
+}
+
+// InitGEO 初始化站点距离
+func InitGEO(stationName string, longitude float64, latitude float64) error {
+	err := RDB.GeoAdd("siteDistance", &redis.GeoLocation{
+		Name:      stationName,
+		Longitude: longitude,
+		Latitude:  latitude,
+	}).Err()
+	return err
+}
+
+// UserSurroundings 用户周边站点
+func UserSurroundings(userLongitude float64, userLatitude float64) ([]redis.GeoLocation, error) {
+	res, err := RDB.GeoRadius("siteDistance", userLongitude, userLatitude, &redis.GeoRadiusQuery{
+		Radius:      1000,
+		Unit:        "m",
+		WithCoord:   true,
+		WithDist:    false,
+		WithGeoHash: false,
+		Count:       10,
+		Sort:        "ASC",
+	}).Result()
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func StationsScoreIncr(IncrNum float64, stationName string) error {
