@@ -78,7 +78,7 @@ func StationDetails(ctx *gin.Context) {
 		log.Printf("查询站点详情信息失败:%s\n", err)
 		return
 	}
-	if err = service.StationsScoreIncr(1, stationName); err != nil {
+	if err = service.StationsScoreIncr(config.Incr, stationName); err != nil {
 		tool.Failure(500, "服务器错误", ctx)
 		log.Printf("增加用户查询次数失败:%s\n", err)
 		return
