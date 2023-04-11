@@ -18,7 +18,7 @@ func MessageDetail(ctx *gin.Context) {
 	message.PostId = ctx.PostForm("postId")
 	messageId := ctx.PostForm("msgId")
 	user.Token = ctx.PostForm("token")
-	if err := tool.IsValid(message.PostId); err != nil {
+	if err = tool.IsValid(message.PostId); err != nil {
 		tool.Failure(400, "缺失必要参数:缺失发信人id", ctx)
 		return
 	}
