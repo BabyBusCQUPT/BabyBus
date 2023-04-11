@@ -8,6 +8,8 @@ import (
 func Init() {
 	engine := gin.Default()
 
+	engine.Use(middleware.Cors)
+
 	engine.POST("/user/register", Register)
 
 	userGroup := engine.Group("/user")
