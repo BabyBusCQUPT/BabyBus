@@ -50,12 +50,10 @@ func Init() {
 		busGroup.GET("/hotStations", HotStations)        //热搜站点
 	}
 
-	/*
-		messageGroup := engine.Group("/message")
-		{
-			messageGroup.GET("/list", ListMsg)                 //罗列所有事件
-			messageGroup.POST("/messageDetail", MessageDetail) //获取信息详情
-		}
-	*/
+	messageGroup := engine.Group("/message")
+	{
+		messageGroup.GET("/list", ListMsg)                 //罗列所有事件
+		messageGroup.POST("/messageDetail", MessageDetail) //获取信息详情
+	}
 
 }
