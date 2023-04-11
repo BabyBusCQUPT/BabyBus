@@ -243,3 +243,34 @@ func Reject(ctx *gin.Context) {
 		"info": "success",
 	})
 }
+
+func Share(ctx *gin.Context) {
+	var err error
+	user := &model.User{}
+	user.Token = ctx.GetHeader("token")
+	longitude := ctx.PostForm("longitude")
+	latitude := ctx.PostForm("latitude")
+	lon, err := tool.IsValidAndTrans(longitude)
+	if err != nil {
+		tool.Failure(400, "用户经度为空", ctx)
+		return
+	}
+	lat, err := tool.IsValidAndTrans(latitude)
+	if err != nil {
+		tool.Failure(400, "用户维度为空", ctx)
+		return
+	}
+	position := model.Position{
+		Longitude: float64(lon),
+		Latitude:  float64(lat),
+	}
+	if err = service.GetIdFromToken(user); err != nil {
+		tool.Failure(500, "服务器错误", ctx)
+		log.Printf("从token中获取id失败:%s\n", err)
+		return
+	}
+	service.SendPos(user.OpenId, position)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+	})
+}

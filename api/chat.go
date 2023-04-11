@@ -43,12 +43,14 @@ func CreateConn(ctx *gin.Context) {
 		return
 	}
 	nodeUser := &model.Node{
-		Conn:      connUser,
-		DataQueue: make(chan []byte, 100),
+		Conn:         connUser,
+		DataQueue:    make(chan []byte, 100),
+		DataPosition: make(chan model.Position, 100),
 	}
 	nodeFriend := &model.Node{
-		Conn:      connFriend,
-		DataQueue: make(chan []byte, 100),
+		Conn:         connFriend,
+		DataQueue:    make(chan []byte, 100),
+		DataPosition: make(chan model.Position, 100),
 	}
 	if _, ok := config.ClientMap[user.OpenId]; ok {
 		if err = config.ClientMap[user.OpenId].Conn.Close(); err != nil {

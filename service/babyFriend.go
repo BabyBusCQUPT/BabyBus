@@ -66,3 +66,10 @@ func SendMsg(userId string, msg string) {
 	node := config.ClientMap[userId]
 	node.DataQueue <- []byte(msg)
 }
+
+func SendPos(userId string, position model.Position) {
+	rwLocker.RLock()
+	defer rwLocker.RUnlock()
+	node := config.ClientMap[userId]
+	node.DataPosition <- position
+}

@@ -37,6 +37,7 @@ func Init() {
 			wsGroup.POST("/addFriend", AddFriend)   //添加好友（通过ws发起请求）
 			wsGroup.POST("/agree", Agree)           //ws同意绑定好友，好友添加成功
 			wsGroup.POST("/reject", Reject)         //ws拒绝绑定好友
+			wsGroup.POST("/share", Share)           //位置共享
 		}
 		friendsGroup.POST("/findFriend", DeriveFriend) //模糊搜索朋友
 		friendsGroup.GET("/bindRecord", GetFriends)    //获取绑定好友及记录

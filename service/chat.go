@@ -21,6 +21,16 @@ func SendProc(nodeUser *model.Node, nodeFriend *model.Node) error {
 			if err != nil {
 				return errors.New("发送信息错误，将信息写入管道错误" + err.Error())
 			}
+		case pos := <-nodeUser.DataPosition:
+			err := nodeUser.Conn.WriteJSON(pos)
+			if err != nil {
+				return errors.New("发送位置错误，将位置写入管道错误" + err.Error())
+			}
+		case pos := <-nodeFriend.DataPosition:
+			err := nodeFriend.Conn.WriteJSON(pos)
+			if err != nil {
+				return errors.New("发送位置错误，将位置写入管道错误" + err.Error())
+			}
 		}
 	}
 }
@@ -28,6 +38,8 @@ func SendProc(nodeUser *model.Node, nodeFriend *model.Node) error {
 // RecProc 接收消息，即将消息从管道里面读出来，转交给另一个人
 func RecProc(nodeUser *model.Node, userId string, nodeFriend *model.Node, friendId string) error {
 	var d []byte
+	var pos model.Position
+	var poss model.Position
 	for {
 		select {
 		case nodeUser.DataQueue <- d:
@@ -48,6 +60,24 @@ func RecProc(nodeUser *model.Node, userId string, nodeFriend *model.Node, friend
 				return errors.New("in recProc read message error: " + err.Error())
 			}
 			SendMsg(friendId, string(data))
+		case nodeUser.DataPosition <- pos:
+			err := nodeUser.Conn.ReadJSON(&poss)
+			if err != nil {
+				if err.Error() == "websocket: close 1001 (going away)" {
+					return errors.New("websocket连接断开")
+				}
+				return errors.New("in recProc read message error: " + err.Error())
+			}
+			SendPos(userId, poss)
+		case nodeFriend.DataPosition <- pos:
+			err := nodeUser.Conn.ReadJSON(&poss)
+			if err != nil {
+				if err.Error() == "websocket: close 1001 (going away)" {
+					return errors.New("websocket连接断开")
+				}
+				return errors.New("in recProc read message error: " + err.Error())
+			}
+			SendPos(friendId, poss)
 		}
 
 	}
